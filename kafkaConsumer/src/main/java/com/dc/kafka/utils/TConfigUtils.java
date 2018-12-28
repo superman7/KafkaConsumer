@@ -43,5 +43,9 @@ public class TConfigUtils {
 	public static String selectDefaultPassword() {
 		return newtconfigDAO.selectDefaultPassword();
 	}
+	
+	public static String selectValueByKey(String cfgKey) {
+		return newtconfigDAO.selectValueByKey(cfgKey);
+	}
 }
 

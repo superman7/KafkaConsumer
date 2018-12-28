@@ -53,10 +53,10 @@ public class KafkaConsumerArticle {
     public String toconsumer(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
-        //默认超过100次则该任务失效。
-        if(count > 100) {
+        //默认超过100次则该任务失效。kafka_retry_times
+        if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
-            return null;
+            return "failed.transaction out time.";
         }
 
         Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));

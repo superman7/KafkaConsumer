@@ -55,16 +55,20 @@ public class KafkaConsumerLottery {
         Integer count = 1;
         return toconsumerLotteryIssueSZBReward(bean, count);
     }
-    
+//    public String toconsumer(KafkaConsumerBean bean, Integer count) {
+//    	System.out.println(count + "***" + bean.getTransactionDetailId() + "***" + bean.getAddress());
+//    	return "aa";
+//    }
     public String toconsumer(KafkaConsumerBean bean, Integer count) {
         count ++;
-        System.out.println(count);
+        System.out.println(count + "***" + bean.getTransactionDetailId());
         //默认超过100次则该任务失效。
-        if(count > 100) {
+        if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
             System.out.println("将交易Hash值更新为异常值");
             jdbc.execute("UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
-            return null;
+            System.out.println("执行数据库操作:UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            return "failed.transaction out time.";
         }
 
         Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
@@ -118,13 +122,17 @@ public class KafkaConsumerLottery {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
-        if(count > 100) {
+        
+        if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
             System.out.println("将交易Hash值更新为异常值");
             jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
             	+ "WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " 
             	+ bean.getTransactionDetailId() + " and value = " + turnBalance);
-            return null;
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+            	+ "WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " 
+            	+ bean.getTransactionDetailId() + " and value = " + turnBalance);
+            return "failed.transaction out time.";
         }
         
         Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));

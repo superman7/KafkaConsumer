@@ -55,9 +55,9 @@ public class KafkaConsumerLessonBuy {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
-        if(count > 100) {
+        if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
-            return null;
+            return "failed.transaction out time.";
         }
 
         Integer index = (int)(Math.random()*(5));

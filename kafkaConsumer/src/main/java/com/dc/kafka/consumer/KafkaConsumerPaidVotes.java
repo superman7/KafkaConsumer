@@ -47,9 +47,9 @@ public class KafkaConsumerPaidVotes {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
-        if(count > 100) {
+        if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
-            return null;
+            return "failed.transaction out time.";
         }
 
         Web3j web3j = Web3j.build(new HttpService(TConfigUtils.selectIp()));
