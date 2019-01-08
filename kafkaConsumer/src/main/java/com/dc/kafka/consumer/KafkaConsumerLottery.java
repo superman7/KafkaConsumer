@@ -60,6 +60,8 @@ public class KafkaConsumerLottery {
 //    	return "aa";
 //    }
     public String toconsumer(KafkaConsumerBean bean, Integer count) {
+    	BigInteger turnBalance = bean.getTurnBalance();
+        BigInteger turnBalanceValue = turnBalance.divide(BigInteger.valueOf(10000000000000000L));
         count ++;
         System.out.println(count + "***" + bean.getTransactionDetailId());
         //默认超过100次则该任务失效。
@@ -68,6 +70,13 @@ public class KafkaConsumerLottery {
             System.out.println("将交易Hash值更新为异常值");
             jdbc.execute("UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             System.out.println("执行数据库操作:UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+                	+ "WHERE contracttype = 'LotteryBuyTicket' and contractid = " 
+                	+ bean.getTransactionDetailId() + " and value = " + turnBalanceValue);
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+                	+ "WHERE contracttype = 'LotteryBuyTicket' and contractid = " 
+                	+ bean.getTransactionDetailId() + " and value = " + turnBalanceValue);
             return "failed.transaction out time.";
         }
 

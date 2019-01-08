@@ -42,6 +42,25 @@ public class LotteryController {
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = TConfigUtils.selectDefaultPassword();
         String contractName = "LotteryBuyTicket";
+        
+        String contractAddress = TConfigUtils.selectContractAddress("lottery_contract");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String turndate = sdf.format(System.currentTimeMillis());
+        BigInteger balance = turnBalance.divide(BigInteger.valueOf(10000000000000000L));
+        
+        //system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+      	//jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,gas,turndate,flag,remark,fromitcode,toitcode,turnhash,timer,contracttype,contractid) values(" + ")");
+      	jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
+      			+ list.get(0).get("account")  +  "',"
+      			+ contractAddress +  "','"
+      			+ balance  +  ",'"
+      			+ turndate 
+      			+  "',0," 
+      			+ "'" + itcode + "',"
+      			+ "'LotteryAdmin',"
+      			+ "'LotteryBuyTicket',"
+      			+ transactionDetailId + ")");
+      	
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("lottery_contract"), turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("lotteryBuyTicket", "LotteryBuyTicket", kafkabean);
 	}
