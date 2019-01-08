@@ -200,7 +200,7 @@ public class KafkaConsumerLottery {
     }
 
     public static File keystoreToFile(String keystore, String keystoreName) throws IOException {
-        File file = new File(TConfigUtils.selectRootPath("keystore_temp_path_test") + keystoreName);
+        File file = new File(TConfigUtils.selectRootPath("keystore_temp_path") + keystoreName);
 
         if( !file.exists() ){
             file.createNewFile();

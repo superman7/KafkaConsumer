@@ -49,7 +49,6 @@ public class SigninController {
 		@RequestParam(name = "itcode", required = true) String itcode, 
 		@RequestParam(name = "reward", required = true) int reward,
 		@RequestParam(name = "transactionDetailId", required = true) String transactionDetailId){
-		
 		String sql = "SELECT * FROM am_ethaccount WHERE itcode = '" + itcode +"' AND available = 3";
         List<Map<String, Object>> list = jdbc.queryForList(sql);
         if(list.size() == 0){
@@ -60,7 +59,7 @@ public class SigninController {
         String contractName = "Qiandao";
         BigInteger turnBalance = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(reward));
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(Integer.valueOf(transactionDetailId), contractName, TConfigUtils.selectContractAddress("signin_contract"), turnBalance, password, keystoreFile);
-        kafkaUtil.sendMessage("signinReward", "SigninReward", kafkabean);
+        kafkaUtil.sendMessage("qiandaoReward", "SigninReward", kafkabean);
 	}
 	
 	@ResponseBody

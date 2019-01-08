@@ -37,42 +37,39 @@ public class KafkaConsumerQianDao {
     
     @Autowired
     private JdbcTemplate jdbc;
-    private Integer count = 1;
     
-//    private static final String rootPath = "/eth/datadir/temp/";
-
     @KafkaListener(topics = {"attendanceReward"})
     public String processorBeatcard(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
-        count = 1;
-        return attendanceReward(bean);
+        Integer count = 1;
+        return attendanceReward(bean, count);
     }
     
     @KafkaListener(topics = {"chargeSigninContract"})
     public String processorChargeToSigninContract(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
-        count = 1;
-        return chargeToSigninContract(bean);
+        Integer count = 1;
+        return chargeToSigninContract(bean, count);
     }
     
-    @KafkaListener(topics = {"signinReward"})
+    @KafkaListener(topics = {"qiandaoReward"})
     public String processorSigninReward(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
-        count = 1;
-        return signinReward(bean);
+        Integer count = 1;
+        return signinReward(bean, count);
     }
     
     @KafkaListener(topics = {"voteReward"})
     public String processorVoteReward(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);
-        count = 1;
-        return voteReward(bean);
+        Integer count = 1;
+        return voteReward(bean, count);
     }
-    public String voteReward(KafkaConsumerBean bean) {
+    public String voteReward(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -91,7 +88,7 @@ public class KafkaConsumerQianDao {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.err.println("构建交易管理异常！");
-            voteReward(bean);
+            voteReward(bean, count);
             return "error, build transaction manager failed.";
         }
        
@@ -105,7 +102,7 @@ public class KafkaConsumerQianDao {
             System.out.println(resultHash);
 
             if(resultHash == null) {
-            	voteReward(bean);
+            	voteReward(bean, count);
             }
 
             //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
@@ -119,12 +116,12 @@ public class KafkaConsumerQianDao {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            voteReward(bean);
+            voteReward(bean, count);
             return "error, transaction hash is null.";
         }
     }
     
-    public String signinReward(KafkaConsumerBean bean) {
+    public String signinReward(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -143,7 +140,7 @@ public class KafkaConsumerQianDao {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.err.println("构建交易管理异常！");
-            signinReward(bean);
+            signinReward(bean, count);
             return "error, build transaction manager failed.";
         }
        
@@ -157,7 +154,7 @@ public class KafkaConsumerQianDao {
             System.out.println(resultHash);
 
             if(resultHash == null) {
-            	signinReward(bean);
+            	signinReward(bean, count);
             }
 
             //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
@@ -171,12 +168,12 @@ public class KafkaConsumerQianDao {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            signinReward(bean);
+            signinReward(bean, count);
             return "error, transaction hash is null.";
         }
     }
     
-    public String chargeToSigninContract(KafkaConsumerBean bean) {
+    public String chargeToSigninContract(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -195,7 +192,7 @@ public class KafkaConsumerQianDao {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.err.println("构建交易管理异常！");
-            chargeToSigninContract(bean);
+            chargeToSigninContract(bean, count);
             return "error, build transaction manager failed.";
         }
        
@@ -209,7 +206,7 @@ public class KafkaConsumerQianDao {
             System.out.println(resultHash);
 
             if(resultHash == null) {
-            	chargeToSigninContract(bean);
+            	chargeToSigninContract(bean, count);
             }
 
             //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
@@ -220,12 +217,12 @@ public class KafkaConsumerQianDao {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            chargeToSigninContract(bean);
+            chargeToSigninContract(bean, count);
             return "error, transaction hash is null.";
         }
     }
     
-    public String attendanceReward(KafkaConsumerBean bean) {
+    public String attendanceReward(KafkaConsumerBean bean, Integer count) {
         count ++;
         System.out.println(count);
         //默认超过100次则该任务失效。
@@ -244,7 +241,7 @@ public class KafkaConsumerQianDao {
             // TODO Auto-generated catch block
             e.printStackTrace();
             System.err.println("构建交易管理异常！");
-            attendanceReward(bean);
+            attendanceReward(bean, count);
             return "error, build transaction manager failed.";
         }
        
@@ -258,7 +255,7 @@ public class KafkaConsumerQianDao {
             System.out.println(resultHash);
 
             if(resultHash == null) {
-            	attendanceReward(bean);
+            	attendanceReward(bean, count);
             }
 
             //FIXME 此处添加根据bean.getTransactionDetailId()更新resultHash。若 resultHash == null则为失败。需重新发送
@@ -272,7 +269,7 @@ public class KafkaConsumerQianDao {
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            attendanceReward(bean);
+            attendanceReward(bean, count);
             return "error, transaction hash is null.";
         }
     }
