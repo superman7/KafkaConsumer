@@ -50,16 +50,18 @@ public class LotteryController {
         
         //system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
       	//jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,gas,turndate,flag,remark,fromitcode,toitcode,turnhash,timer,contracttype,contractid) values(" + ")");
-      	jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
-      			+ list.get(0).get("account")  +  "',"
-      			+ contractAddress +  "','"
+        String sqlqqq = "insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
+      			+ list.get(0).get("account")  +  "','"
+      			+ contractAddress +  "',"
       			+ balance  +  ",'"
       			+ turndate 
       			+  "',0," 
       			+ "'" + itcode + "',"
       			+ "'LotteryAdmin',"
       			+ "'LotteryBuyTicket',"
-      			+ transactionDetailId + ")");
+      			+ transactionDetailId + ")";
+        System.err.println(sqlqqq);
+      	jdbc.execute(sqlqqq);
       	
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("lottery_contract"), turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("lotteryBuyTicket", "LotteryBuyTicket", kafkabean);

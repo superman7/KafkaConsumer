@@ -1,6 +1,7 @@
 package com.dc.kafka.controller;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,11 +54,32 @@ public class SigninController {
         if(list.size() == 0){
         	return;
         }
+        
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = "mini0823";
         String contractName = "Qiandao";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String turndate = sdf.format(System.currentTimeMillis());
         BigInteger turnBalance = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(reward));
-        KafkaConsumerBean kafkabean = new KafkaConsumerBean(Integer.valueOf(transactionDetailId), contractName, TConfigUtils.selectContractAddress("signin_contract"), turnBalance, password, keystoreFile);
+        String contractAddress = TConfigUtils.selectContractAddress("signin_contract");
+        
+        //system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+      	//jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,gas,turndate,flag,remark,fromitcode,toitcode,turnhash,timer,contracttype,contractid) values(" + ")");
+        String sqlqqq = "insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
+      			+ contractAddress
+      			+  "','"
+      			+ list.get(0).get("account") 
+      			+  "'," + String.valueOf(reward)  +  ",'"
+      			+ turndate 
+      			+  "',0," 
+      			+ "'SigninAdmin',"
+      			+ "'" + itcode + "',"
+      			+ "'SigninReward',"
+      			+ transactionDetailId + ")";
+        System.err.println(sqlqqq);
+      	jdbc.execute(sqlqqq);
+      	
+        KafkaConsumerBean kafkabean = new KafkaConsumerBean(Integer.valueOf(transactionDetailId), contractName, contractAddress, turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("qiandaoReward", "SigninReward", kafkabean);
 	}
 	
@@ -77,7 +98,27 @@ public class SigninController {
 		String keystoreFile = list.get(0).get("keystore").toString();
 		String password = "mini0823";
         String contractName = "Qiandao";
+        String contractAddress = TConfigUtils.selectContractAddress("signin_contract");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String turndate = sdf.format(System.currentTimeMillis());
         BigInteger turnBalance = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(reward));
+        
+        //system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+      	//jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,gas,turndate,flag,remark,fromitcode,toitcode,turnhash,timer,contracttype,contractid) values(" + ")");
+        String sqlqqq = "insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
+      			+ contractAddress
+      			+  "','"
+      			+ list.get(0).get("account") 
+      			+  "'," + String.valueOf(reward)  +  ",'"
+      			+ turndate 
+      			+  "',0," 
+      			+ "'VoteAdmin',"
+      			+ "'" + itcode + "',"
+      			+ "'EverydayVoteReward',"
+      			+ transactionDetailId + ")";
+        System.err.println(sqlqqq);
+      	jdbc.execute(sqlqqq);
+      	
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(Integer.valueOf(transactionDetailId), contractName, TConfigUtils.selectContractAddress("signin_contract"), turnBalance, password, keystoreFile);
         kafkaUtil.sendMessage("voteReward", "VoteReward", kafkabean);
 	}
@@ -98,6 +139,27 @@ public class SigninController {
             String password = "mini0823";
             String contractName = "Qiandao";
             BigInteger turnBalance = BigInteger.valueOf(10000000000000000L).multiply(BigInteger.valueOf(reward));
+
+            String contractAddress = TConfigUtils.selectContractAddress("signin_contract");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String turndate = sdf.format(System.currentTimeMillis());
+            
+            //system_transactiondetail表，根据contracttype，contractid更新交易哈希，flag，获取gas并更新？
+          	//jdbc.execute("insert into system_transactiondetail (fromcount,tocount,value,gas,turndate,flag,remark,fromitcode,toitcode,turnhash,timer,contracttype,contractid) values(" + ")");
+            String sqlqqq = "insert into system_transactiondetail (fromcount,tocount,value,turndate,flag,fromitcode,toitcode,contracttype,contractid) values('"
+          			+ contractAddress
+          			+  "','"
+          			+ list.get(0).get("account") 
+          			+  "'," + String.valueOf(reward)  +  ",'"
+          			+ turndate 
+          			+  "',0," 
+          			+ "'AttendanceAdmin',"
+          			+ "'" + itcode + "',"
+          			+ "'AttendanceReward',"
+          			+ transactionDetailId + ")";
+            System.err.println(sqlqqq);
+          	jdbc.execute(sqlqqq);
+          	
             KafkaConsumerBean kafkabean = new KafkaConsumerBean(Integer.valueOf(transactionDetailId), contractName, TConfigUtils.selectContractAddress("signin_contract"), turnBalance, password, keystoreFile);
             kafkaUtil.sendMessage("attendanceReward", "AttendanceReward", kafkabean);
 	}
