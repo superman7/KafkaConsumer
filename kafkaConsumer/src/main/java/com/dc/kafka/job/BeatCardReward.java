@@ -26,7 +26,7 @@ public class BeatCardReward {
     private KafkaUtil kafkaUtil;
     
     @Transactional
-//    @Scheduled(cron="30 30 08 * * ?")
+    @Scheduled(cron="30 30 08 * * ?")
     public void sendAttendanceRewards(){
         System.err.println("开始考勤奖励员工编号获取...");
         String result = "";
