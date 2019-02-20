@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +66,15 @@ public class KafkaConsumerLottery {
         BigInteger turnBalanceValue = turnBalance.divide(BigInteger.valueOf(10000000000000000L));
         count ++;
         System.out.println(count + "***" + bean.getTransactionDetailId());
+        
+        //根据id查询当期场次
+        String findLotteryIdSql = "SELECT * FROM t_paidlottery_details WHERE id = " + bean.getTransactionDetailId().toString();
+        List<Map<String, Object>> list1 = jdbc.queryForList(findLotteryIdSql);
+        String lotteryId = "XX";
+        if(list1.size() > 0){
+            lotteryId = list1.get(0).get("lotteryId").toString();
+        }
+        
         //默认超过100次则该任务失效。
         if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
@@ -71,7 +82,7 @@ public class KafkaConsumerLottery {
             jdbc.execute("UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             System.out.println("执行数据库操作:UPDATE t_paidlottery_details SET hashcode = '0x0',account = '" + getCredentials(bean).getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
-            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='参与第" + lotteryId + "期夺宝活动(交易未被写入区块链)'" 
                 	+ "WHERE contracttype = 'LotteryBuyTicket' and contractid = " 
                 	+ bean.getTransactionDetailId() + " and value = " + turnBalanceValue);
             System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
@@ -114,7 +125,8 @@ public class KafkaConsumerLottery {
             jdbc.execute("UPDATE t_paidlottery_details SET hashcode = '" + resultHash + "',account = '" + credentials.getAddress() + "' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
             System.out.println("将交易Hash值更新至system_transactiondetail表中:" + "UPDATE system_transactiondetail SET fromcount = '" + credentials.getAddress() + "', turnhash = '" + resultHash + "', flag = 1 WHERE contracttype = 'LotteryBuyTicket' AND contractid = " + bean.getTransactionDetailId() + ";");
-            jdbc.execute("UPDATE system_transactiondetail SET fromcount = '" + credentials.getAddress() + "', turnhash = '" + resultHash + "', flag = 1 WHERE contracttype = 'LotteryBuyTicket' AND contractid = " + bean.getTransactionDetailId() + ";");
+            jdbc.execute("UPDATE system_transactiondetail SET fromcount = '" + credentials.getAddress() + "', turnhash = '" + resultHash + "', flag = 1,remark='参与第" + lotteryId + "期夺宝活动'" 
+                	+ "WHERE contracttype = 'LotteryBuyTicket' AND contractid = " + bean.getTransactionDetailId() + ";");
             
             return resultHash;
         } catch (Exception e) {
@@ -138,7 +150,7 @@ public class KafkaConsumerLottery {
             jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
             	+ "WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " 
             	+ bean.getTransactionDetailId() + " and value = " + turnBalance);
-            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='第" + bean.getTransactionDetailId().toString() + "期区块链夺宝神州币奖励(交易未被写入区块链)'" 
             	+ "WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " 
             	+ bean.getTransactionDetailId() + " and value = " + turnBalance);
             return "failed.transaction out time.";
@@ -174,7 +186,7 @@ public class KafkaConsumerLottery {
             jdbc.execute("INSERT INTO kafka_data (id, topic, hashres,createdate) VALUES (NULL, 'lotteryIssueSZBReward', '" + resultHash + "',sysdate())");
             
             System.out.println("将交易Hash值更新至system_transactiondetail表中:" + "UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1" + " WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " + bean.getTransactionDetailId() + " and value = " + turnBalance + ";");
-            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='区块链夺宝神州币奖励。'" 
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='第" + bean.getTransactionDetailId().toString() + "期区块链夺宝神州币奖励'" 
                 	+ " WHERE contracttype = 'LotteryIssueSZBReward' and contractid = " 
                 	+ bean.getTransactionDetailId() + " and value = " + turnBalance + ";");
             

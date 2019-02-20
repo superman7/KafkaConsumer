@@ -75,6 +75,17 @@ public class KafkaConsumerQianDao {
         //默认超过100次则该任务失效。
         if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
+            
+            System.out.println("将交易Hash值更新为异常值:" + "UPDATE t_signinreward SET transactionhash='0x0', backup1='每日投票奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='0x0', backup1='每日投票奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+                	+ "WHERE contracttype = 'EverydayVoteReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='每日投票奖励！(交易未被写入区块链)'" 
+                	+ "WHERE contracttype = 'EverydayVoteReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
+            
             return "failed.transaction out time.";
         }
 
@@ -112,6 +123,9 @@ public class KafkaConsumerQianDao {
             System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日投票奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日投票奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
             
+            System.out.println("将交易Hash值更新至system_transactiondetail表中:UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日投票奖励！' WHERE contracttype = 'EverydayVoteReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日投票奖励！' WHERE contracttype = 'EverydayVoteReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
+            
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -127,6 +141,16 @@ public class KafkaConsumerQianDao {
         //默认超过100次则该任务失效。
         if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
+            
+            System.out.println("将交易Hash值更新为异常值:" + "UPDATE t_signinreward SET transactionhash='0x0', backup1='每日签到奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='0x0', backup1='每日签到奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+                	+ "WHERE contracttype = 'SigninReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='每日签到奖励！(交易未被写入区块链)'" 
+                	+ "WHERE contracttype = 'SigninReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
             return "failed.transaction out time.";
         }
 
@@ -163,6 +187,9 @@ public class KafkaConsumerQianDao {
             
             System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日签到奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日签到奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            
+            System.out.println("将交易Hash值更新至system_transactiondetail表中:UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日签到奖励！' WHERE contracttype = 'SigninReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日签到奖励！' WHERE contracttype = 'SigninReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
             
             return resultHash;
         } catch (Exception e) {
@@ -228,6 +255,16 @@ public class KafkaConsumerQianDao {
         //默认超过100次则该任务失效。
         if(count > Integer.valueOf(TConfigUtils.selectValueByKey("kafka_retry_times"))) {
             count = 1;
+            
+            System.out.println("将交易Hash值更新为异常值:" + "UPDATE t_signinreward SET transactionhash='0x0', backup1='考勤奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+            jdbc.execute("UPDATE t_signinreward SET transactionhash='0x0', backup1='考勤奖励！(未写入区块链)' WHERE id = " + bean.getTransactionDetailId() + "; ");
+
+            System.out.println("将交易Hash值更新为异常值:UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='交易未被写入区块链。'" 
+                	+ "WHERE contracttype = 'AttendanceReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '0x0',flag = 3,remark='考勤奖励！(交易未被写入区块链)'" 
+                	+ "WHERE contracttype = 'AttendanceReward' and contractid = " 
+                	+ bean.getTransactionDetailId()  + "; ");
             return "failed.transaction out time.";
         }
 
@@ -264,7 +301,9 @@ public class KafkaConsumerQianDao {
             
             System.out.println("将交易Hash值更新至t_signinreward表中:" + "UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日考勤奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
             jdbc.execute("UPDATE t_signinreward SET transactionhash='" + resultHash + "', backup1='每日考勤奖励！' WHERE id = " + bean.getTransactionDetailId() + "; ");
-            
+
+            System.out.println("将交易Hash值更新至system_transactiondetail表中:UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日考勤奖励！' WHERE contracttype = 'SigninReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
+            jdbc.execute("UPDATE system_transactiondetail SET turnhash = '" + resultHash + "',flag = 1,remark='每日考勤奖励！' WHERE contracttype = 'AttendanceReward' and contractid = " + bean.getTransactionDetailId()  + "; ");
             return resultHash;
         } catch (Exception e) {
             // TODO Auto-generated catch block
