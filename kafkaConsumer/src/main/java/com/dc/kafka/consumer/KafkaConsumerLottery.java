@@ -42,7 +42,7 @@ public class KafkaConsumerLottery {
     @Autowired
     private JdbcTemplate jdbc;
     
-    @KafkaListener(topics = {"lotteryBuyTicket"})
+    @KafkaListener(topics = {"lotteryBuyTicket1"})
     public String processor(ConsumerRecord<?, ?> record){
         Gson gson = new Gson();
         KafkaConsumerBean bean = gson.fromJson(record.value().toString(), KafkaConsumerBean.class);

@@ -64,7 +64,7 @@ public class LotteryController {
       	jdbc.execute(sqlqqq);
       	
         KafkaConsumerBean kafkabean = new KafkaConsumerBean(transactionDetailId, contractName, TConfigUtils.selectContractAddress("lottery_contract"), turnBalance, password, keystoreFile);
-        kafkaUtil.sendMessage("lotteryBuyTicket", "LotteryBuyTicket", kafkabean);
+        kafkaUtil.sendMessage("lotteryBuyTicket1", "LotteryBuyTicket", kafkabean);
 	}
 	
 	@ResponseBody
